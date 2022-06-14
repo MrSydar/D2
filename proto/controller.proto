@@ -1,0 +1,11 @@
+syntax = "proto3";
+package protogen;
+
+message Move {
+	enum Direction {
+		FORWARD = 0;
+		BACKWARD = 1;
+		LEFT = 2;
+		RIGHT = 3;
+	}
+}
