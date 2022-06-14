@@ -1,7 +1,12 @@
 syntax = "proto3";
 package protogen;
+option go_package = "./protogen";
 
-message Move {
+service D2 {
+	rpc Move (MoveDetails) returns (Empty);
+}
+
+message MoveDetails {
 	enum Direction {
 		FORWARD = 0;
 		BACKWARD = 1;
@@ -9,3 +14,5 @@ message Move {
 		RIGHT = 3;
 	}
 }
+
+message Empty {};
