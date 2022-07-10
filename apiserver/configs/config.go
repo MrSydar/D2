@@ -1,10 +1,14 @@
 package configs
 
-import "log"
+import (
+	"2corp/d2/apiserver/configs/database"
+	"2corp/d2/apiserver/configs/environment"
+	"log"
+)
 
 func init() {
 	log.Println("Initializing configurations")
 
-	initEnvironmentVariables()
-	initDatabase()
+	environment.Init()
+	database.Init()
 }

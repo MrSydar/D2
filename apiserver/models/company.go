@@ -6,5 +6,5 @@ import (
 
 type Company struct {
 	ID   primitive.ObjectID `bson:"_id,omitempty"`
-	Name string             `bson:"name,omitempty"`
+	Name string             `bson:"name,omitempty" validate:"required"`
 }
