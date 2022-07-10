@@ -6,19 +6,18 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var DB *mongo.Client
-
 func connectDB() (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	mongoURI := os.Getenv(env.Names.MongoUri)
+	mongoURI := os.Getenv(env.Configuration.VariableNames.MongoUri)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new client: %v", err)
@@ -32,17 +31,52 @@ func connectDB() (*mongo.Client, error) {
 	return client, nil
 }
 
-func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	dbName := os.Getenv(env.Names.Database)
-	return client.Database(dbName).Collection(collectionName)
+func (c *Config) getCollection(collectionName string) *mongo.Collection {
+	return c.DB.Database(c.dbName).Collection(collectionName)
 }
 
-func Init() {
+type Config struct {
+	DB     *mongo.Client
+	dbName string
+
+	Collections struct {
+		Items,
+		Places,
+		Companies *mongo.Collection
+	}
+}
+
+func (c *Config) Verify() error {
+	reflectNames := reflect.ValueOf(c.Collections)
+
+	for i := 0; i < reflectNames.NumField(); i++ {
+		fieldValue := reflectNames.Field(i).Interface().(*mongo.Collection)
+
+		if fieldValue == nil {
+			fieldName := reflectNames.Type().Field(i).Name
+			return fmt.Errorf("%v is not set", fieldName)
+		}
+	}
+
+	return nil
+}
+
+func (c *Config) Init() error {
 	log.Print("Initializing database connection")
 
 	var err error
-	DB, err = connectDB()
+	c.DB, err = connectDB()
 	if err != nil {
-		log.Fatalf("failed to connect to database: %v", err)
+		return fmt.Errorf("failed to connect to database: %v", err)
 	}
+
+	c.dbName = os.Getenv(env.Configuration.VariableNames.Database)
+
+	c.Collections.Companies = c.getCollection(env.Configuration.VariableNames.CompanyCollection)
+	c.Collections.Items = c.getCollection(env.Configuration.VariableNames.ItemCollection)
+	c.Collections.Places = c.getCollection(env.Configuration.VariableNames.PlaceCollection)
+
+	return nil
 }
+
+var Configuration Config = Config{}

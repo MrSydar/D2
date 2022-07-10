@@ -9,8 +9,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func verify() error {
-	reflectNames := reflect.ValueOf(Names)
+type Config struct {
+	VariableNames struct {
+		MongoUri,
+		Database,
+		CompanyCollection,
+		ItemCollection,
+		PlaceCollection string
+	}
+}
+
+func (c *Config) Verify() error {
+	reflectNames := reflect.ValueOf(c.VariableNames)
 
 	for i := 0; i < reflectNames.NumField(); i++ {
 		fieldValue := reflectNames.Field(i).Interface().(string)
@@ -28,14 +38,20 @@ func verify() error {
 	return nil
 }
 
-func Init() {
+func (c *Config) Init() error {
 	log.Print("Initializing environment variables")
 
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Failed to load .env file: %v", err)
+		return fmt.Errorf("failed to load .env file: %v", err)
 	}
 
-	if err := verify(); err != nil {
-		log.Fatalf("Failed to verify environment variables: %v", err)
-	}
+	c.VariableNames.MongoUri = "MONGOURI"
+	c.VariableNames.Database = "DATABASENAME"
+	c.VariableNames.CompanyCollection = "COMPANYCOLLECTION"
+	c.VariableNames.ItemCollection = "ITEMCOLLECTION"
+	c.VariableNames.PlaceCollection = "PLACECOLLECTION"
+
+	return nil
 }
+
+var Configuration Config = Config{}
