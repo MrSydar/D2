@@ -1,7 +1,11 @@
 package routes
 
-import "github.com/labstack/echo"
+import (
+	"2corp/d2/apiserver/controllers"
+
+	"github.com/labstack/echo"
+)
 
 func Company(e *echo.Echo) {
-	// TODO
+	e.POST("/company", controllers.CreateCompany)
 }

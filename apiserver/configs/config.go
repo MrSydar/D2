@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-type Config interface {
+type IConfig interface {
 	Init() error
 	Verify() error
 }
@@ -16,7 +16,7 @@ func init() {
 	reflectNames := reflect.ValueOf(Configs)
 
 	for i := 0; i < reflectNames.NumField(); i++ {
-		fieldValue := reflectNames.Field(i).Interface().(Config)
+		fieldValue := reflectNames.Field(i).Interface().(IConfig)
 		fieldName := reflectNames.Type().Field(i).Name
 
 		if fieldValue == nil {
