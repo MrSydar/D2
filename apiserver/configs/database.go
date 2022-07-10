@@ -3,13 +3,20 @@ package configs
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func ConnectDB() (*mongo.Client, error) {
+func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+	return client.Database(EnvDatabaseName()).Collection(collectionName)
+}
+
+var DB *mongo.Client
+
+func connectDB() (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -26,6 +33,12 @@ func ConnectDB() (*mongo.Client, error) {
 	return client, nil
 }
 
-func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	return client.Database(EnvDatabaseName()).Collection(collectionName)
+func initDatabase() {
+	log.Print("Initializing database connection")
+
+	var err error
+	DB, err = connectDB()
+	if err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
+	}
 }

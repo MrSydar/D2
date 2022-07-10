@@ -33,7 +33,9 @@ func verify() error {
 	return nil
 }
 
-func init() {
+func initEnvironmentVariables() {
+	log.Print("Initializing environment variables")
+
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Failed to load .env file: %v", err)
 	}
