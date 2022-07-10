@@ -1,7 +1,6 @@
-package badrequest
+package responses
 
 import (
-	"2corp/d2/apiserver/responses"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -10,7 +9,7 @@ import (
 func BodyValidationFailed(c echo.Context, err error) error {
 	return c.JSON(
 		http.StatusBadRequest,
-		responses.Default{
+		Body{
 			Status:  http.StatusBadRequest,
 			Message: "failed to validate request body",
 			Data:    &echo.Map{"data": err.Error()},
@@ -21,7 +20,7 @@ func BodyValidationFailed(c echo.Context, err error) error {
 func FieldValidationFailed(c echo.Context, err error) error {
 	return c.JSON(
 		http.StatusBadRequest,
-		responses.Default{
+		Body{
 			Status:  http.StatusBadRequest,
 			Message: "failed to validate request body fields",
 			Data:    &echo.Map{"data": err.Error()},

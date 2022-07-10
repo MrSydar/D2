@@ -8,4 +8,5 @@ import (
 
 func Company(e *echo.Echo) {
 	e.POST("/company", controllers.CreateCompany)
+	e.GET("/company/:id", controllers.GetCompany)
 }
