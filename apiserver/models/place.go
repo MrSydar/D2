@@ -3,8 +3,8 @@ package models
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Place struct {
-	ID        primitive.ObjectID   `bson:"_id,omitempty"`
-	Company   primitive.ObjectID   `bson:"company,omitempty"`
+	Protected
+
 	Menu      []primitive.ObjectID `bson:"menu,omitempty"`
 	Address   string               `bson:"address,omitempty"`
 	City      string               `bson:"city,omitempty"`

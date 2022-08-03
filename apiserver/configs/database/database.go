@@ -42,7 +42,7 @@ type Config struct {
 	Collections struct {
 		Items,
 		Places,
-		Companies *mongo.Collection
+		Accounts *mongo.Collection
 	}
 }
 
@@ -72,7 +72,7 @@ func (c *Config) Init() error {
 
 	c.dbName = os.Getenv(env.Configuration.VariableNames.Database)
 
-	c.Collections.Companies = c.getCollection(env.Configuration.VariableNames.CompanyCollection)
+	c.Collections.Accounts = c.getCollection(env.Configuration.VariableNames.AccountCollection)
 	c.Collections.Items = c.getCollection(env.Configuration.VariableNames.ItemCollection)
 	c.Collections.Places = c.getCollection(env.Configuration.VariableNames.PlaceCollection)
 

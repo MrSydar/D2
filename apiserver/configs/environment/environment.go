@@ -13,9 +13,14 @@ type Config struct {
 	VariableNames struct {
 		MongoUri,
 		Database,
-		CompanyCollection,
+		AccountCollection,
 		ItemCollection,
-		PlaceCollection string
+		PlaceCollection,
+		Auth0CallbackFullURI,
+		Auth0CallbackURI,
+		Auth0GetTokenURL,
+		Auth0ClientID,
+		Auth0ClientSecret string
 	}
 }
 
@@ -45,11 +50,16 @@ func (c *Config) Init() error {
 		return fmt.Errorf("failed to load .env file: %v", err)
 	}
 
-	c.VariableNames.MongoUri = "MONGOURI"
-	c.VariableNames.Database = "DATABASENAME"
-	c.VariableNames.CompanyCollection = "COMPANYCOLLECTION"
-	c.VariableNames.ItemCollection = "ITEMCOLLECTION"
-	c.VariableNames.PlaceCollection = "PLACECOLLECTION"
+	c.VariableNames.MongoUri = "MONGO_URI"
+	c.VariableNames.Database = "DATABASE_NAME"
+	c.VariableNames.AccountCollection = "ACCOUNT_COLLECTION"
+	c.VariableNames.ItemCollection = "ITEM_COLLECTION"
+	c.VariableNames.PlaceCollection = "PLACE_COLLECTION"
+	c.VariableNames.Auth0CallbackFullURI = "AUTH0_CALLBACK_FULL_URI"
+	c.VariableNames.Auth0CallbackURI = "AUTH0_CALLBACK_URI"
+	c.VariableNames.Auth0GetTokenURL = "AUTH0_GET_TOKEN_URL"
+	c.VariableNames.Auth0ClientID = "AUTH0_CLIENT_ID"
+	c.VariableNames.Auth0ClientSecret = "AUTH0_CLIENT_SECRET"
 
 	return nil
 }
