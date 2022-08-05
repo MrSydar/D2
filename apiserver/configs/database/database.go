@@ -1,13 +1,14 @@
 package database
 
 import (
-	env "2corp/d2/apiserver/configs/environment"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"reflect"
 	"time"
+
+	env "2corp/d2/apiserver/configs/environment"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

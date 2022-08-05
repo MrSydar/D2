@@ -16,9 +16,9 @@ type Config struct {
 		AccountCollection,
 		ItemCollection,
 		PlaceCollection,
-		Auth0CallbackFullURI,
-		Auth0CallbackURI,
-		Auth0GetTokenURL,
+		Auth0CallbackURL,
+		Auth0CallbackEndpoint,
+		Auth0Domain,
 		Auth0ClientID,
 		Auth0ClientSecret string
 	}
@@ -55,9 +55,9 @@ func (c *Config) Init() error {
 	c.VariableNames.AccountCollection = "ACCOUNT_COLLECTION"
 	c.VariableNames.ItemCollection = "ITEM_COLLECTION"
 	c.VariableNames.PlaceCollection = "PLACE_COLLECTION"
-	c.VariableNames.Auth0CallbackFullURI = "AUTH0_CALLBACK_FULL_URI"
-	c.VariableNames.Auth0CallbackURI = "AUTH0_CALLBACK_URI"
-	c.VariableNames.Auth0GetTokenURL = "AUTH0_GET_TOKEN_URL"
+	c.VariableNames.Auth0CallbackURL = "AUTH0_CALLBACK_URL"
+	c.VariableNames.Auth0CallbackEndpoint = "AUTH0_CALLBACK_ENDPOINT"
+	c.VariableNames.Auth0Domain = "AUTH0_DOMAIN"
 	c.VariableNames.Auth0ClientID = "AUTH0_CLIENT_ID"
 	c.VariableNames.Auth0ClientSecret = "AUTH0_CLIENT_SECRET"
 

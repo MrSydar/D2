@@ -2,14 +2,12 @@ package controllers
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
 	"2corp/d2/apiserver/configs"
 	"2corp/d2/apiserver/models"
-	"2corp/d2/apiserver/responses"
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
@@ -21,29 +19,35 @@ var validate = validator.New()
 var collection = configs.Configs.Database.Collections.Accounts
 
 func CreateAccount(c echo.Context) error {
-	var company models.Item
+	var account models.Account
 
-	if err := c.Bind(&company); err != nil {
-		return responses.BodyValidationFailed(c, err)
+	if err := c.Bind(&account); err != nil {
+		msg := "failed to bind account body"
+		c.Logger().Error(msg + ": " + err.Error())
+		return c.String(http.StatusBadRequest, msg)
 	}
 
-	if err := validate.Struct(&company); err != nil {
-		return responses.FieldValidationFailed(c, err)
+	if err := validate.Struct(&account); err != nil {
+		msg := "failed to validate account body structure"
+		c.Logger().Error(msg + ": " + err.Error())
+		return c.String(http.StatusBadRequest, msg)
 	}
 
-	company.ID = primitive.NewObjectID()
+	account.ID = primitive.NewObjectID()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	result, err := collection.InsertOne(ctx, company)
+	result, err := collection.InsertOne(ctx, account)
 	if err != nil {
-		err = fmt.Errorf("failed to insert company: %v", err)
-		c.Logger().Error(err)
-		return responses.InternalServerError(c, errors.New("failed to insert company"))
+		msg := "failed to insert company"
+		c.Logger().Error(msg + ": " + err.Error())
+		return c.String(http.StatusInternalServerError, msg)
 	}
 
-	return responses.Created(c, result)
+	account.ID = result.InsertedID.(primitive.ObjectID)
+
+	return c.JSON(http.StatusCreated, account)
 }
 
 func GetAccount(c echo.Context) error {
@@ -56,15 +60,14 @@ func GetAccount(c echo.Context) error {
 	defer cancel()
 
 	if err := collection.FindOne(ctx, bson.M{"_id": objId}).Decode(&item); err != nil {
-		err = fmt.Errorf("failed to find company: %v", err)
-		c.Logger().Error(err)
-
 		if strings.Contains(err.Error(), "no documents in result") {
-			return responses.NotFound(c, fmt.Errorf("no account was found"))
+			return c.String(http.StatusNotFound, "no account was found")
 		} else {
-			return responses.InternalServerError(c, fmt.Errorf("failed to get account"))
+			msg := "failed to get account"
+			c.Logger().Error(msg + ": " + err.Error())
+			return c.String(http.StatusInternalServerError, msg)
 		}
 	}
 
-	return responses.Created(c, item)
+	return c.JSON(http.StatusOK, item)
 }

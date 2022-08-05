@@ -1,28 +1,49 @@
 package controllers
 
 import (
-	"2corp/d2/apiserver/configs"
-	"2corp/d2/apiserver/responses"
-	"errors"
-	"fmt"
+	"io"
 	"net/http"
+
+	"2corp/d2/apiserver/configs"
 
 	"github.com/labstack/echo/v4"
 )
 
-func GetJWTToken(c echo.Context) error {
+func FetchJWTToken(c echo.Context) error {
 	code := c.QueryParam("code")
 	if code == "" {
-		err := errors.New("code parameter was not provided")
-		c.Logger().Error(err)
-		return responses.QueryParamValidationFailed(c, err)
+		msg := "code parameter was not provided"
+		c.Logger().Error(msg)
+		return c.String(http.StatusBadRequest, msg)
 	}
 
-	response, err := http.Post(configs.Configs.Auth0.GenerateGetTokenURL(code), "application/x-www-form-urlencoded", nil)
+	url := configs.Configs.Auth0.TokenFetchURL
+	data := configs.Configs.Auth0.GetDataForTokenFetchWithCode(code)
+
+	response, err := http.PostForm(url, data)
 	if err != nil {
-		err = fmt.Errorf("failed to ", err)
-		return responses.InternalServerError(c)
+		msg := "failed to retrieve JWT token from Auth0 server"
+		c.Logger().Error(msg + ": " + err.Error())
+		return c.String(http.StatusServiceUnavailable, msg)
 	}
 
-	return nil
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		msg := "failed to read response form Auth0 server"
+		c.Logger().Error(msg + ": " + err.Error())
+		return c.String(http.StatusInternalServerError, msg)
+	}
+
+	if response.StatusCode != http.StatusOK {
+		if response.StatusCode == http.StatusForbidden {
+			msg := "got response from auth0: unauthorized"
+			return c.String(http.StatusForbidden, msg)
+		} else {
+			msg := "got bad response from auth0"
+			c.Logger().Error(msg + ": " + string(body))
+			return c.String(http.StatusServiceUnavailable, msg)
+		}
+	}
+
+	return c.String(http.StatusOK, string(body))
 }
