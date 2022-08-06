@@ -1,6 +1,7 @@
 package auth0
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 	"os"
@@ -11,6 +12,7 @@ import (
 type Config struct {
 	TokenFetchURL                string
 	CallbackEndpoint             string
+	Secret                       string
 	GetDataForTokenFetchWithCode func(code string) url.Values
 }
 
@@ -21,8 +23,9 @@ func (c *Config) Verify() error {
 func (c *Config) Init() error {
 	log.Print("Initializing Auth0 variables")
 
-	c.TokenFetchURL = os.Getenv(environment.Configuration.VariableNames.Auth0Domain)
+	c.TokenFetchURL = fmt.Sprintf("https://%s/oauth/token", os.Getenv(environment.Configuration.VariableNames.Auth0Domain))
 	c.CallbackEndpoint = os.Getenv(environment.Configuration.VariableNames.Auth0CallbackEndpoint)
+	c.Secret = os.Getenv(environment.Configuration.VariableNames.Auth0ClientSecret)
 
 	defaultData := url.Values{
 		"grant_type":    {"authorization_code"},

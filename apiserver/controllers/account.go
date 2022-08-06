@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"net/http"
-	"strings"
 	"time"
 
 	"2corp/d2/apiserver/configs"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -51,23 +49,24 @@ func CreateAccount(c echo.Context) error {
 }
 
 func GetAccount(c echo.Context) error {
-	var item models.Item
+	// var item models.Item
 
-	itemID := c.Param("_id")
-	objId, _ := primitive.ObjectIDFromHex(itemID)
+	// itemID := c.Param("_id")
+	// objId, _ := primitive.ObjectIDFromHex(itemID)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	// defer cancel()
 
-	if err := collection.FindOne(ctx, bson.M{"_id": objId}).Decode(&item); err != nil {
-		if strings.Contains(err.Error(), "no documents in result") {
-			return c.String(http.StatusNotFound, "no account was found")
-		} else {
-			msg := "failed to get account"
-			c.Logger().Error(msg + ": " + err.Error())
-			return c.String(http.StatusInternalServerError, msg)
-		}
-	}
+	// if err := collection.FindOne(ctx, bson.M{"_id": objId}).Decode(&item); err != nil {
+	// 	if strings.Contains(err.Error(), "no documents in result") {
+	// 		return c.String(http.StatusNotFound, "no account was found")
+	// 	} else {
+	// 		msg := "failed to get account"
+	// 		c.Logger().Error(msg + ": " + err.Error())
+	// 		return c.String(http.StatusInternalServerError, msg)
+	// 	}
+	// }
 
-	return c.JSON(http.StatusOK, item)
+	// return c.JSON(http.StatusOK, item)
+	return c.String(http.StatusOK, "your account :)")
 }
