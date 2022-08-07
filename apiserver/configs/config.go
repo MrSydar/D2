@@ -1,34 +1,30 @@
 package configs
 
 import (
-	"log"
-	"reflect"
+	stdlog "log"
+
+	"2corp/d2/apiserver/configs/auth0"
+	"2corp/d2/apiserver/configs/database"
+	"2corp/d2/apiserver/configs/environment"
+	"2corp/d2/apiserver/configs/log"
 )
 
-type IConfig interface {
-	Init() error
-	Verify() error
-}
-
 func init() {
-	log.Println("Initializing configurations")
+	stdlog.Print("Initializing configs")
 
-	reflectNames := reflect.ValueOf(Configs)
+	if err := log.Init(); err != nil {
+		stdlog.Fatalf("failed to initialize logger config: %v", err)
+	}
 
-	for i := 0; i < reflectNames.NumField(); i++ {
-		fieldValue := reflectNames.Field(i).Interface().(IConfig)
-		fieldName := reflectNames.Type().Field(i).Name
+	if err := environment.Init(); err != nil {
+		stdlog.Fatalf("failed to initialize environment config: %v", err)
+	}
 
-		if fieldValue == nil {
-			log.Fatalf("%v config is not set", fieldName)
-		}
+	if err := database.Init(); err != nil {
+		stdlog.Fatalf("failed to initialize database config: %v", err)
+	}
 
-		if err := fieldValue.Init(); err != nil {
-			log.Fatalf("failed to initialize %v config: %v", fieldName, err)
-		}
-
-		if err := fieldValue.Verify(); err != nil {
-			log.Fatalf("failed to verify %v config: %v", fieldName, err)
-		}
+	if err := auth0.Init(); err != nil {
+		stdlog.Fatalf("failed to initialize auth0 config: %v", err)
 	}
 }
