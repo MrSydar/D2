@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"2corp/d2/apiserver/configs/constants/contextnames"
+	"2corp/d2/apiserver/responses"
 	"fmt"
 	"net/http"
 
@@ -11,5 +12,5 @@ import (
 func GetAccount(c echo.Context) error {
 	accountID := c.Get(contextnames.AccountID)
 
-	return c.String(http.StatusOK, fmt.Sprintf(`your account ID is "%v"`, accountID))
+	return responses.Message(c, http.StatusOK, fmt.Sprint(accountID))
 }

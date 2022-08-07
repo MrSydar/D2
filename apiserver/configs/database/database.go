@@ -45,7 +45,7 @@ func Init() error {
 	}
 
 	databaseName := os.Getenv(envnames.DatabaseName)
-	Collections.Accounts = DB.Database(databaseName).Collection(envnames.AccountCollection)
+	Collections.Accounts = DB.Database(databaseName).Collection(os.Getenv(envnames.AccountCollection))
 
 	return nil
 }
